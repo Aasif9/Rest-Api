@@ -3,6 +3,7 @@ package com.avengers.studentManagement;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
+import java.util.Map;
 
 @RestController
 public class StudentController {
@@ -20,7 +21,11 @@ public class StudentController {
 
     @GetMapping("/get_student")
     public Student addStudent(@RequestParam("q") int admnNo){
-        return db.get(admnNo);
+        if ( ! db.containsKey(admnNo)){
+            System.out.println(admnNo+" Admission number is invalid!!");
+            return null ;
+        }
+        return db.get(admnNo) ;
     }
 
     //add information
@@ -55,7 +60,7 @@ public class StudentController {
         }
     }
 
-    @GetMapping("/get_student_by_name")
+  /*  @GetMapping("/get_student_by_name")
     public Student getStudentByName(@RequestParam("name") String name) {
         // Iterate over all the students in the database
         for (Student student : db.values()) {
@@ -67,5 +72,23 @@ public class StudentController {
         }
         // If no student with the given name is found, return null
         return null;
+    }*/
+    // get information using Name:-->>
+    @GetMapping("/get_student_byName")
+    public Student getStudent (@RequestParam("q") String name ){
+        int adminId = 0 ;
+        for ( Map.Entry < Integer , Student > e : db.entrySet()){
+            Student std = e.getValue() ;
+            String sName = std.getName() ;
+            if( sName.equals(name)){
+                adminId = e.getKey() ;
+            }
+        }
+        if ( adminId == 0 ){
+            System.out.println(name+ " The Name you have entered does not exist");
+            return null ;
+        } else {
+            return db.get(adminId) ;
+        }
     }
 }
